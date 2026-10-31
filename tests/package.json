@@ -1,0 +1,14 @@
+{
+  "name": "testes-calendario-2026",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Testes automatizados de responsividade e agenda do Calendário 2026",
+  "scripts": {
+    "test": "node responsivo.mjs",
+    "test:producao": "node responsivo.mjs https://calendario-2026-ivory.vercel.app"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.16.0"
+  }
+}
