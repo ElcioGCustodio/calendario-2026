@@ -1,0 +1,16 @@
+# Dependências e artefatos locais
+node_modules/
+.vercel/
+.env
+.env.*
+!.env.example
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp

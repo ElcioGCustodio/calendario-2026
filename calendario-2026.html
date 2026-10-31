@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendário 2026 · Mogi das Cruzes</title>
+<style>
+  :root {
+    --fundo: #f4f6fb;
+    --cartao: #ffffff;
+    --texto: #1f2937;
+    --suave: #94a3b8;
+    --borda: #e2e8f0;
+    --destaque: #2563eb;
+    --destaque-suave: #dbeafe;
+    --fim-de-semana: #ef4444;
+
+    --nacional: #2563eb;
+    --nacional-suave: #dbeafe;
+    --estadual: #7c3aed;
+    --estadual-suave: #ede9fe;
+    --municipal: #059669;
+    --municipal-suave: #d1fae5;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 32px 20px 56px;
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    background: radial-gradient(circle at top, #e9effb 0%, var(--fundo) 45%) no-repeat;
+    background-color: var(--fundo);
+    color: var(--texto);
+  }
+
+  header {
+    max-width: 1180px;
+    margin: 0 auto 28px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  h1 span { color: var(--destaque); }
+
+  .subtitulo {
+    margin: 6px 0 0;
+    color: var(--suave);
+    font-size: 0.95rem;
+  }
+
+  .acoes { display: flex; gap: 10px; }
+
+  button {
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--borda);
+    background: var(--cartao);
+    color: var(--texto);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+
+  button:hover { background: #eef2ff; transform: translateY(-1px); }
+  button.principal {
+    background: var(--destaque);
+    border-color: var(--destaque);
+    color: #fff;
+    box-shadow: 0 8px 18px -8px var(--destaque);
+  }
+  button.principal:hover { background: #1d4ed8; }
+
+  .calendario {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+    gap: 20px;
+  }
+
+  .mes {
+    background: var(--cartao);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    padding: 18px 16px 20px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .mes:hover {
+    box-shadow: 0 14px 30px -18px rgba(15, 23, 42, 0.45);
+    transform: translateY(-2px);
+  }
+
+  .mes h2 {
+    margin: 0 0 14px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    color: var(--destaque);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .mes h2 small {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--suave);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  th {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--suave);
+    padding-bottom: 8px;
+  }
+
+  th.fim { color: var(--fim-de-semana); }
+
+  td {
+    text-align: center;
+    font-size: 0.84rem;
+    padding: 5px 0;
+    border-radius: 8px;
+    cursor: default;
+  }
+
+  td.vazio { color: transparent; }
+
+  td.fim { color: var(--fim-de-semana); }
+
+  td.hoje {
+    background: var(--destaque);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  td.feriado-nacional {
+    background: var(--nacional-suave);
+    color: var(--nacional);
+    font-weight: 700;
+  }
+
+  td.feriado-estadual {
+    background: var(--estadual-suave);
+    color: var(--estadual);
+    font-weight: 700;
+  }
+
+  td.feriado-municipal {
+    background: var(--municipal-suave);
+    color: var(--municipal);
+    font-weight: 700;
+  }
+
+  td.facultativo {
+    color: var(--suave);
+    font-style: italic;
+    border: 1px dashed #cbd5e1;
+  }
+
+  td.hoje.feriado-nacional,
+  td.hoje.feriado-estadual,
+  td.hoje.feriado-municipal {
+    background: var(--destaque);
+    color: #fff;
+  }
+
+  tbody tr:hover td:not(.vazio):not(.hoje) { background: #f1f5f9; }
+  tbody tr:hover td.fim:not(.hoje) { background: #fee2e2; }
+
+  /* ---------- Legenda completa ---------- */
+  .legenda-completa {
+    max-width: 1180px;
+    margin: 44px auto 0;
+    background: var(--cartao);
+    border: 1px solid var(--borda);
+    border-radius: 18px;
+    padding: 26px 24px 30px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .legenda-completa > h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+  }
+
+  .legenda-completa > p {
+    margin: 6px 0 22px;
+    color: var(--suave);
+    font-size: 0.88rem;
+  }
+
+  .grupos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 26px 32px;
+  }
+
+  .grupo h3 {
+    margin: 0 0 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .grupo h3::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: var(--cor, var(--suave));
+    flex: 0 0 auto;
+  }
+
+  .grupo.nacional { --cor: var(--nacional); }
+  .grupo.estadual { --cor: var(--estadual); }
+  .grupo.municipal { --cor: var(--municipal); }
+  .grupo.facultativo { --cor: #cbd5e1; }
+
+  .grupo.nacional h3 { color: var(--nacional); }
+  .grupo.estadual h3 { color: var(--estadual); }
+  .grupo.municipal h3 { color: var(--municipal); }
+  .grupo.facultativo h3 { color: var(--suave); }
+
+  .grupo ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+
+  .grupo li {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 10px;
+    align-items: baseline;
+    padding: 7px 8px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+
+  .grupo li:hover { background: #f8fafc; }
+
+  .grupo li time {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--cor);
+  }
+
+  .grupo.facultativo li time { color: var(--suave); font-weight: 600; }
+
+  .grupo li .nome { line-height: 1.25; }
+
+  .grupo li .dia {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--suave);
+    font-weight: 400;
+  }
+
+  .grupo li .nota {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--suave);
+    font-style: italic;
+  }
+
+  .aviso {
+    margin: 24px 0 0;
+    padding-top: 18px;
+    border-top: 1px dashed var(--borda);
+    font-size: 0.78rem;
+    color: var(--suave);
+    line-height: 1.5;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: var(--suave);
+  }
+
+  .chip { display: flex; align-items: center; gap: 6px; }
+
+  .amostra {
+    width: 12px; height: 12px; border-radius: 4px;
+    display: inline-block;
+  }
+  .amostra.hoje { background: var(--destaque); }
+  .amostra.nacional { background: var(--nacional-suave); border: 1px solid #bfdbfe; }
+  .amostra.estadual { background: var(--estadual-suave); border: 1px solid #ddd6fe; }
+  .amostra.municipal { background: var(--municipal-suave); border: 1px solid #a7f3d0; }
+  .amostra.facultativo { background: #fff; border: 1px dashed #cbd5e1; }
+  .amostra.fim { background: #fee2e2; border: 1px solid #fecaca; }
+
+  footer {
+    max-width: 1180px;
+    margin: 28px auto 0;
+    color: var(--suave);
+    font-size: 0.78rem;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ---------- Compromissos ---------- */
+  td { position: relative; }
+
+  td[data-data] { cursor: pointer; }
+  td[data-data]:focus-visible {
+    outline: 2px solid var(--destaque);
+    outline-offset: -2px;
+  }
+
+  td.com-compromisso::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 1px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--destaque);
+    transform: translateX(-50%);
+  }
+
+  td.com-compromisso.hoje::after { background: #fff; }
+
+  td.piscar { animation: piscar 0.9s ease-out 2; }
+
+  @keyframes piscar {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.55); }
+    50% { box-shadow: 0 0 0 7px rgba(37, 99, 235, 0); }
+  }
+
+  .compromissos {
+    max-width: 1180px;
+    margin: 24px auto 0;
+    background: var(--cartao);
+    border: 1px solid var(--borda);
+    border-radius: 18px;
+    padding: 26px 24px 28px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .compromissos h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+  }
+
+  .compromissos > p {
+    margin: 6px 0 18px;
+    color: var(--suave);
+    font-size: 0.88rem;
+  }
+
+  .lista-compromissos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .item-compromisso {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: #fbfdff;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .item-compromisso:hover {
+    border-color: #bfdbfe;
+    background: #f5f9ff;
+  }
+
+  .item-compromisso .data {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--destaque);
+    font-variant-numeric: tabular-nums;
+    min-width: 78px;
+    flex: 0 0 auto;
+  }
+
+  .item-compromisso .data small {
+    display: block;
+    font-weight: 500;
+    font-size: 0.7rem;
+    color: var(--suave);
+  }
+
+  .item-compromisso .hora {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: #475569;
+    min-width: 44px;
+    flex: 0 0 auto;
+  }
+
+  .item-compromisso .info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .item-compromisso .info strong {
+    display: block;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+  }
+
+  .item-compromisso .info span {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--suave);
+    overflow-wrap: anywhere;
+  }
+
+  .btn-excluir {
+    flex: 0 0 auto;
+    border: none;
+    background: transparent;
+    color: #ef4444;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-excluir:hover { background: #fee2e2; }
+
+  .vazio-lista {
+    color: var(--suave);
+    font-size: 0.85rem;
+    padding: 8px 2px;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-fundo {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    animation: aparecer 0.18s ease-out;
+  }
+
+  .modal-fundo[hidden] { display: none; }
+
+  .modal {
+    position: relative;
+    width: min(480px, 100%);
+    max-height: 86vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.5);
+    animation: subir 0.2s ease-out;
+  }
+
+  .modal h2 {
+    margin: 0 0 4px;
+    font-size: 1.22rem;
+    letter-spacing: -0.01em;
+  }
+
+  .modal-data {
+    margin: 0 0 18px;
+    color: var(--suave);
+    font-size: 0.84rem;
+    text-transform: capitalize;
+  }
+
+  .fechar {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .fechar:hover { background: #e2e8f0; color: var(--texto); }
+
+  .lista-dia {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .lista-dia li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f8fafc;
+    font-size: 0.85rem;
+  }
+
+  .lista-dia .hora {
+    flex: 0 0 auto;
+    min-width: 42px;
+    font-weight: 700;
+    color: var(--destaque);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lista-dia .texto { flex: 1; min-width: 0; }
+  .lista-dia .texto strong { display: block; font-weight: 600; overflow-wrap: anywhere; }
+  .lista-dia .texto small { display: block; color: var(--suave); font-size: 0.74rem; overflow-wrap: anywhere; }
+  .lista-dia .btn-excluir { padding: 2px 6px; font-size: 0.95rem; }
+  .lista-dia .vazio-lista { padding: 0; }
+
+  #form-compromisso {
+    display: grid;
+    gap: 12px;
+    border-top: 1px dashed var(--borda);
+    padding-top: 16px;
+  }
+
+  .campo {
+    display: grid;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .campo input {
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 400;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--borda);
+    background: #fff;
+    color: var(--texto);
+  }
+
+  .campo input:focus {
+    outline: 2px solid var(--destaque);
+    outline-offset: 1px;
+    border-color: transparent;
+  }
+
+  .linha-campos {
+    display: grid;
+    grid-template-columns: 112px 1fr;
+    gap: 12px;
+  }
+
+  #form-compromisso button[type="submit"] { justify-self: start; }
+
+  @keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes subir { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 520px) {
+    .linha-campos { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .acoes { display: none; }
+    .mes { break-inside: avoid; border-color: #ccc; box-shadow: none; }
+    .calendario { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .legenda-completa, .compromissos { break-inside: avoid; border-color: #ccc; box-shadow: none; }
+    .modal-fundo { display: none !important; }
+    .btn-excluir, #btn-novo { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Calendário <span>2026</span></h1>
+    <p class="subtitulo">Mogi das Cruzes (SP) · feriados nacionais, estaduais e municipais</p>
+  </div>
+  <div class="acoes">
+    <button id="btn-novo">+ Novo compromisso</button>
+    <button id="btn-hoje">Ir para hoje</button>
+    <button class="principal" onclick="window.print()">Imprimir</button>
+  </div>
+</header>
+
+<main class="calendario" id="calendario" aria-label="Calendário do ano de 2026"></main>
+
+<section class="legenda-completa" aria-labelledby="titulo-legenda">
+  <h2 id="titulo-legenda">Legenda dos feriados</h2>
+  <p id="resumo"></p>
+  <div class="grupos" id="grupos"></div>
+
+  <div class="chips">
+    <span class="chip"><i class="amostra hoje"></i> Hoje</span>
+    <span class="chip"><i class="amostra nacional"></i> Feriado nacional</span>
+    <span class="chip"><i class="amostra estadual"></i> Feriado estadual</span>
+    <span class="chip"><i class="amostra municipal"></i> Feriado municipal</span>
+    <span class="chip"><i class="amostra facultativo"></i> Ponto facultativo</span>
+    <span class="chip"><i class="amostra fim"></i> Fim de semana</span>
+  </div>
+
+  <p class="aviso">
+    <strong>Observação:</strong> feriados nacionais seguem a Lei nº 9.093/1995 e leis específicas.
+    Os feriados municipais de Mogi das Cruzes constam na Lei Municipal nº 3.125/1986
+    (Corpus Christi e Nossa Senhora de Sant'Ana) e na Lei Municipal nº 1.585/1966
+    (Aniversário da cidade). O 20 de novembro é feriado nacional desde 2024. Pontos facultativos
+    não são feriados obrigatórios — a folga depende de decreto da Prefeitura ou de acordo com o empregador.
+  </p>
+</section>
+
+<section class="compromissos" aria-labelledby="titulo-compromissos">
+  <h2 id="titulo-compromissos">Meus compromissos</h2>
+  <p id="resumo-compromissos">Clique em qualquer dia do calendário para agendar.</p>
+  <ul id="lista-compromissos" class="lista-compromissos"></ul>
+</section>
+
+<footer>
+  Calendário de 2026 gerado para Mogi das Cruzes (SP) · atualizado em outubro de 2026<br>
+  Seus compromissos ficam salvos apenas neste navegador (armazenamento local).<br>
+  Confirme sempre as datas de feriados no site oficial da Prefeitura de Mogi das Cruzes.
+</footer>
+
+<div class="modal-fundo" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo" aria-describedby="modal-data">
+    <button class="fechar" id="fechar-modal" type="button" aria-label="Fechar">×</button>
+    <h2 id="modal-titulo">Compromissos do dia</h2>
+    <p class="modal-data" id="modal-data"></p>
+
+    <ul class="lista-dia" id="lista-dia"></ul>
+
+    <form id="form-compromisso">
+      <div class="linha-campos">
+        <label class="campo">
+          Horário
+          <input type="time" id="campo-hora" name="hora">
+        </label>
+        <label class="campo">
+          Compromisso
+          <input type="text" id="campo-titulo" name="titulo" maxlength="80"
+                 placeholder="Ex.: consulta médica" required autocomplete="off">
+        </label>
+      </div>
+      <label class="campo">
+        Observação (opcional)
+        <input type="text" id="campo-obs" name="obs" maxlength="160"
+               placeholder="Ex.: levar documentos" autocomplete="off">
+      </label>
+      <button type="submit" class="principal">Adicionar compromisso</button>
+    </form>
+  </div>
+</div>
+
+
+<script>
+  const ANO = 2026;
+  // Semana começando no domingo (padrão no Brasil)
+  const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const MESES = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+
+  /*
+   * tipo: "nacional" | "estadual" | "municipal" | "facultativo"
+   * data no formato "MM-DD" (ano fixo em 2026)
+   */
+  const FERIADOS = [
+    // ---- Nacionais ----
+    { data: "01-01", nome: "Confraternização Universal", tipo: "nacional" },
+    { data: "04-03", nome: "Sexta-feira da Paixão", tipo: "nacional", nota: "Paixão de Cristo" },
+    { data: "04-21", nome: "Tiradentes", tipo: "nacional" },
+    { data: "05-01", nome: "Dia do Trabalho", tipo: "nacional" },
+    { data: "09-07", nome: "Independência do Brasil", tipo: "nacional" },
+    { data: "10-12", nome: "Nossa Senhora Aparecida", tipo: "nacional", nota: "Padroeira do Brasil" },
+    { data: "11-02", nome: "Finados", tipo: "nacional" },
+    { data: "11-15", nome: "Proclamação da República", tipo: "nacional" },
+    { data: "11-20", nome: "Consciência Negra", tipo: "nacional", nota: "Dia Nacional de Zumbi e da Consciência Negra" },
+    { data: "12-25", nome: "Natal", tipo: "nacional" },
+
+    // ---- Estadual (São Paulo) ----
+    { data: "07-09", nome: "Revolução Constitucionalista", tipo: "estadual", nota: "Feriado estadual de São Paulo — 1932" },
+
+    // ---- Municipais de Mogi das Cruzes ----
+    { data: "06-04", nome: "Corpus Christi", tipo: "municipal", nota: "Lei Municipal nº 3.125/1986" },
+    { data: "07-26", nome: "Nossa Senhora de Sant'Ana", tipo: "municipal", nota: "Padroeira de Mogi das Cruzes" },
+    { data: "09-01", nome: "Aniversário de Mogi das Cruzes", tipo: "municipal", nota: "Fundação da cidade — Lei Municipal nº 1.585/1966" },
+
+    // ---- Pontos facultativos (não obrigatórios) ----
+    { data: "02-16", nome: "Carnaval", tipo: "facultativo", nota: "Segunda-feira de Carnaval" },
+    { data: "02-17", nome: "Carnaval", tipo: "facultativo", nota: "Terça-feira de Carnaval" },
+    { data: "02-18", nome: "Quarta-feira de Cinzas", tipo: "facultativo", nota: "Expediente até as 13h" },
+    { data: "10-30", nome: "Dia do Servidor Público", tipo: "facultativo", nota: "Data de referência: 28/10" },
+    { data: "12-24", nome: "Véspera de Natal", tipo: "facultativo", nota: "Após as 14h" },
+    { data: "12-31", nome: "Véspera de Ano Novo", tipo: "facultativo", nota: "Após as 14h" }
+  ];
+
+  const NOMES_GRUPOS = {
+    nacional: "Feriados nacionais",
+    estadual: "Feriado estadual (SP)",
+    municipal: "Feriados municipais · Mogi das Cruzes",
+    facultativo: "Pontos facultativos"
+  };
+  const ORDEM_GRUPOS = ["nacional", "estadual", "municipal", "facultativo"];
+
+  const doisDigitos = (n) => String(n).padStart(2, "0");
+
+  const dataDoFeriado = (f) => {
+    const [mes, dia] = f.data.split("-").map(Number);
+    return new Date(ANO, mes - 1, dia);
+  };
+
+  const chave = (mes, dia) => doisDigitos(mes + 1) + "-" + doisDigitos(dia);
+
+  const porData = new Map(FERIADOS.map((f) => [f.data, f]));
+
+  /* ---------- Agenda (salva no navegador) ---------- */
+  const CHAVE_AGENDA = "agenda-2026-mogi";
+  const formatadorDiaLongo = new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long", day: "2-digit", month: "long", year: "numeric"
+  });
+  const formatadorDiaCurto = new Intl.DateTimeFormat("pt-BR", { weekday: "short" });
+
+  let agenda = carregarAgenda();
+  let diaAberto = null;
+  let focoAnterior = null;
+
+  function carregarAgenda() {
+    try {
+      const bruto = localStorage.getItem(CHAVE_AGENDA);
+      if (!bruto) return {};
+      const dados = JSON.parse(bruto);
+      if (!dados || typeof dados !== "object") return {};
+
+      const limpo = {};
+      Object.keys(dados).forEach((data) => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || !Array.isArray(dados[data])) return;
+        limpo[data] = dados[data]
+          .filter((c) => c && typeof c.titulo === "string" && c.titulo.trim())
+          .map((c) => ({
+            id: String(c.id || criarId()),
+            hora: typeof c.hora === "string" ? c.hora : "",
+            titulo: c.titulo.trim(),
+            obs: typeof c.obs === "string" ? c.obs : ""
+          }));
+      });
+      return limpo;
+    } catch (erro) {
+      return {};
+    }
+  }
+
+  function salvarAgenda() {
+    try {
+      localStorage.setItem(CHAVE_AGENDA, JSON.stringify(agenda));
+    } catch (erro) {
+      /* armazenamento indisponível: mantém apenas nesta sessão */
+    }
+  }
+
+  function criarId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  const dataISO = (mes, dia) => ANO + "-" + chave(mes, dia);
+  const horaOuFim = (c) => c.hora || "99:99";
+  const ordenarCompromissos = (a, b) => horaOuFim(a).localeCompare(horaOuFim(b));
+  const compromissosDaData = (iso) => agenda[iso] || [];
+
+  function dataDeISO(iso) {
+    const [ano, mes, dia] = iso.split("-").map(Number);
+    return new Date(ano, mes - 1, dia);
+  }
+
+  function abrirModal(iso) {
+    diaAberto = iso;
+    focoAnterior = document.activeElement;
+    document.getElementById("modal-data").textContent =
+      formatadorDiaLongo.format(dataDeISO(iso));
+    document.getElementById("modal-titulo").textContent = "Compromissos do dia";
+    renderizarListaDia();
+    document.getElementById("modal").hidden = false;
+    document.body.style.overflow = "hidden";
+    setTimeout(() => document.getElementById("campo-titulo").focus(), 40);
+  }
+
+  function fecharModal() {
+    const modal = document.getElementById("modal");
+    if (modal.hidden) return;
+    modal.hidden = true;
+    document.body.style.overflow = "";
+    diaAberto = null;
+    if (focoAnterior && document.contains(focoAnterior)) focoAnterior.focus();
+    focoAnterior = null;
+  }
+
+  function renderizarListaDia() {
+    const lista = document.getElementById("lista-dia");
+    lista.innerHTML = "";
+    if (!diaAberto) return;
+
+    const itens = compromissosDaData(diaAberto).slice().sort(ordenarCompromissos);
+
+    if (!itens.length) {
+      const vazio = document.createElement("li");
+      vazio.className = "vazio-lista";
+      vazio.textContent = "Nenhum compromisso neste dia. Use o formulário abaixo.";
+      lista.appendChild(vazio);
+      return;
+    }
+
+    itens.forEach((c) => {
+      const li = document.createElement("li");
+
+      const hora = document.createElement("span");
+      hora.className = "hora";
+      hora.textContent = c.hora || "—";
+      li.appendChild(hora);
+
+      const texto = document.createElement("span");
+      texto.className = "texto";
+      const titulo = document.createElement("strong");
+      titulo.textContent = c.titulo;
+      texto.appendChild(titulo);
+      if (c.obs) {
+        const obs = document.createElement("small");
+        obs.textContent = c.obs;
+        texto.appendChild(obs);
+      }
+      li.appendChild(texto);
+
+      const excluir = document.createElement("button");
+      excluir.type = "button";
+      excluir.className = "btn-excluir";
+      excluir.dataset.id = c.id;
+      excluir.textContent = "✕";
+      excluir.setAttribute("aria-label", "Excluir compromisso " + c.titulo);
+      li.appendChild(excluir);
+
+      lista.appendChild(li);
+    });
+  }
+
+  function excluirCompromisso(iso, id) {
+    if (!agenda[iso]) return;
+    agenda[iso] = agenda[iso].filter((c) => c.id !== id);
+    if (!agenda[iso].length) delete agenda[iso];
+    salvarAgenda();
+    renderizarListaDia();
+    montarPainel();
+    desenhar();
+  }
+
+  function montarPainel() {
+    const lista = document.getElementById("lista-compromissos");
+    const resumo = document.getElementById("resumo-compromissos");
+    lista.innerHTML = "";
+
+    const entradas = [];
+    Object.keys(agenda).forEach((iso) => {
+      if (!iso.startsWith(ANO + "-")) return;
+      agenda[iso].forEach((c) => entradas.push({ ...c, iso }));
+    });
+
+    entradas.sort(
+      (a, b) => a.iso.localeCompare(b.iso) || ordenarCompromissos(a, b)
+    );
+
+    if (!entradas.length) {
+      const vazio = document.createElement("li");
+      vazio.className = "vazio-lista";
+      vazio.textContent = "Nenhum compromisso agendado. Clique em qualquer dia do calendário para começar.";
+      lista.appendChild(vazio);
+      resumo.textContent = "Clique em qualquer dia do calendário para agendar.";
+      return;
+    }
+
+    resumo.textContent =
+      entradas.length === 1
+        ? "1 compromisso agendado."
+        : entradas.length + " compromissos agendados.";
+
+    entradas.forEach((c) => {
+      const data = dataDeISO(c.iso);
+      const li = document.createElement("li");
+      li.className = "item-compromisso";
+      li.dataset.data = c.iso;
+      li.tabIndex = 0;
+      li.title = "Clique para ver o dia no calendário";
+
+      const dataEl = document.createElement("span");
+      dataEl.className = "data";
+      dataEl.textContent =
+        doisDigitos(data.getDate()) + "/" + doisDigitos(data.getMonth() + 1);
+      const diaSemana = document.createElement("small");
+      diaSemana.textContent = formatadorDiaCurto.format(data).replace(".", "");
+      dataEl.appendChild(diaSemana);
+      li.appendChild(dataEl);
+
+      const horaEl = document.createElement("span");
+      horaEl.className = "hora";
+      horaEl.textContent = c.hora || "—";
+      li.appendChild(horaEl);
+
+      const info = document.createElement("span");
+      info.className = "info";
+      const titulo = document.createElement("strong");
+      titulo.textContent = c.titulo;
+      info.appendChild(titulo);
+      const obs = document.createElement("span");
+      obs.textContent = c.obs || "Sem observação";
+      info.appendChild(obs);
+      li.appendChild(info);
+
+      const excluir = document.createElement("button");
+      excluir.type = "button";
+      excluir.className = "btn-excluir";
+      excluir.dataset.id = c.id;
+      excluir.dataset.data = c.iso;
+      excluir.textContent = "✕";
+      excluir.setAttribute("aria-label", "Excluir compromisso " + c.titulo);
+      li.appendChild(excluir);
+
+      lista.appendChild(li);
+    });
+  }
+
+  function irParaDia(iso) {
+    fecharModal();
+    const mes = Number(iso.split("-")[1]);
+    const card = document.getElementById("mes-" + mes);
+    if (!card) return;
+
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    setTimeout(() => {
+      const td = document.querySelector('td[data-data="' + iso + '"]');
+      if (!td) return;
+      td.classList.add("piscar");
+      td.focus({ preventScroll: true });
+      setTimeout(() => td.classList.remove("piscar"), 1900);
+    }, 380);
+  }
+
+  function criarMes(mes, hoje) {
+    const card = document.createElement("section");
+    card.className = "mes";
+    card.id = "mes-" + (mes + 1);
+
+    const titulo = document.createElement("h2");
+    titulo.textContent = MESES[mes];
+    const ano = document.createElement("small");
+    ano.textContent = ANO;
+    titulo.appendChild(ano);
+    card.appendChild(titulo);
+
+    const tabela = document.createElement("table");
+    const thead = document.createElement("thead");
+    const linhaCabecalho = document.createElement("tr");
+    DIAS.forEach((dia, i) => {
+      const th = document.createElement("th");
+      th.textContent = dia;
+      if (i === 0 || i === 6) th.className = "fim";
+      linhaCabecalho.appendChild(th);
+    });
+    thead.appendChild(linhaCabecalho);
+    tabela.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    const primeiroDiaSemana = new Date(ANO, mes, 1).getDay();
+    const totalDias = new Date(ANO, mes + 1, 0).getDate();
+    let diaAtual = 1;
+
+    for (let linha = 0; linha < 6; linha++) {
+      const tr = document.createElement("tr");
+
+      for (let coluna = 0; coluna < 7; coluna++) {
+        const td = document.createElement("td");
+        const posicao = linha * 7 + coluna;
+
+        if (posicao < primeiroDiaSemana || diaAtual > totalDias) {
+          td.className = "vazio";
+          td.textContent = "·";
+          tr.appendChild(td);
+          continue;
+        }
+
+        const chaveDia = chave(mes, diaAtual);
+        const iso = ANO + "-" + chaveDia;
+        const feriado = porData.get(chaveDia);
+        const compromissos = compromissosDaData(iso);
+        const ehHoje =
+          hoje &&
+          hoje.getFullYear() === ANO &&
+          hoje.getMonth() === mes &&
+          hoje.getDate() === diaAtual;
+
+        td.textContent = diaAtual;
+        td.dataset.data = iso;
+        td.tabIndex = 0;
+        td.setAttribute("role", "button");
+
+        if (coluna === 0 || coluna === 6) td.classList.add("fim");
+        if (compromissos.length) td.classList.add("com-compromisso");
+        if (feriado) td.classList.add("feriado-" + feriado.tipo);
+        if (ehHoje) td.classList.add("hoje");
+
+        const rotulo = [diaAtual + " de " + MESES[mes]];
+        if (ehHoje) rotulo.push("hoje");
+        if (feriado) rotulo.push(feriado.nome);
+        if (compromissos.length) {
+          rotulo.push(
+            compromissos.length + (compromissos.length === 1 ? " compromisso" : " compromissos")
+          );
+        }
+        rotulo.push("clique para agendar");
+        td.setAttribute("aria-label", rotulo.join(", "));
+
+        const dica = [];
+        if (ehHoje) dica.push("Hoje");
+        if (feriado) dica.push(feriado.nome + (feriado.nota ? " — " + feriado.nota : ""));
+        if (compromissos.length) {
+          dica.push(
+            compromissos.length + (compromissos.length === 1 ? " compromisso" : " compromissos")
+          );
+        }
+        dica.push("Clique para agendar");
+        td.title = dica.join(" · ");
+
+        tr.appendChild(td);
+        diaAtual++;
+      }
+
+      if (diaAtual > totalDias) {
+        const temDia = Array.from(tr.children).some(
+          (td) => !td.classList.contains("vazio")
+        );
+        if (!temDia) break;
+      }
+
+      tbody.appendChild(tr);
+      if (diaAtual > totalDias) break;
+    }
+
+    tabela.appendChild(tbody);
+    card.appendChild(tabela);
+    return card;
+  }
+
+  function montarLegenda() {
+    const grupos = document.getElementById("grupos");
+    const formatadorDia = new Intl.DateTimeFormat("pt-BR", { weekday: "long" });
+    grupos.innerHTML = "";
+
+    ORDEM_GRUPOS.forEach((tipo) => {
+      const itens = FERIADOS
+        .filter((f) => f.tipo === tipo)
+        .sort((a, b) => a.data.localeCompare(b.data));
+
+      if (!itens.length) return;
+
+      const grupo = document.createElement("div");
+      grupo.className = "grupo " + tipo;
+
+      const titulo = document.createElement("h3");
+      titulo.textContent = NOMES_GRUPOS[tipo];
+      grupo.appendChild(titulo);
+
+      const lista = document.createElement("ul");
+
+      itens.forEach((f) => {
+        const data = dataDoFeriado(f);
+        const li = document.createElement("li");
+
+        const time = document.createElement("time");
+        time.dateTime = ANO + "-" + f.data;
+        time.textContent = doisDigitos(data.getDate()) + "/" + doisDigitos(data.getMonth() + 1);
+        li.appendChild(time);
+
+        const bloco = document.createElement("span");
+        bloco.className = "nome";
+        bloco.textContent = f.nome;
+
+        const dia = document.createElement("span");
+        dia.className = "dia";
+        dia.textContent = formatadorDia.format(data);
+        bloco.appendChild(dia);
+
+        if (f.nota) {
+          const nota = document.createElement("span");
+          nota.className = "nota";
+          nota.textContent = f.nota;
+          bloco.appendChild(nota);
+        }
+
+        li.appendChild(bloco);
+        lista.appendChild(li);
+      });
+
+      grupo.appendChild(lista);
+      grupos.appendChild(grupo);
+    });
+
+    const conta = (tipo) => FERIADOS.filter((f) => f.tipo === tipo).length;
+    document.getElementById("resumo").textContent =
+      conta("nacional") + " feriados nacionais · " +
+      conta("estadual") + " estadual · " +
+      conta("municipal") + " municipais de Mogi das Cruzes · " +
+      conta("facultativo") + " pontos facultativos";
+  }
+
+  function desenhar() {
+    const container = document.getElementById("calendario");
+    container.innerHTML = "";
+    const hoje = new Date();
+    for (let mes = 0; mes < 12; mes++) {
+      container.appendChild(criarMes(mes, hoje));
+    }
+  }
+
+  document.getElementById("btn-hoje").addEventListener("click", () => {
+    const agora = new Date();
+    const alvo = agora.getFullYear() === ANO ? agora.getMonth() + 1 : null;
+    if (alvo) {
+      const card = document.getElementById("mes-" + alvo);
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      card.style.outline = "3px solid var(--destaque)";
+      setTimeout(() => (card.style.outline = ""), 1600);
+    } else {
+      window.alert("Hoje não é um dia de " + ANO + ". O calendário mostra o ano inteiro de " + ANO + ".");
+    }
+  });
+
+  /* ---------- Interações da agenda ---------- */
+  const containerCalendario = document.getElementById("calendario");
+  const modal = document.getElementById("modal");
+  const form = document.getElementById("form-compromisso");
+
+  containerCalendario.addEventListener("click", (e) => {
+    const td = e.target.closest("td[data-data]");
+    if (td) abrirModal(td.dataset.data);
+  });
+
+  containerCalendario.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const td = e.target.closest("td[data-data]");
+    if (!td) return;
+    e.preventDefault();
+    abrirModal(td.dataset.data);
+  });
+
+  document.getElementById("btn-novo").addEventListener("click", () => {
+    const agora = new Date();
+    const iso =
+      agora.getFullYear() === ANO
+        ? ANO + "-" + doisDigitos(agora.getMonth() + 1) + "-" + doisDigitos(agora.getDate())
+        : ANO + "-01-01";
+    abrirModal(iso);
+  });
+
+  document.getElementById("fechar-modal").addEventListener("click", fecharModal);
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) fecharModal();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.hidden) fecharModal();
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!diaAberto) return;
+
+    const campoTitulo = document.getElementById("campo-titulo");
+    const titulo = campoTitulo.value.trim();
+    if (!titulo) {
+      campoTitulo.focus();
+      return;
+    }
+
+    const entrada = {
+      id: criarId(),
+      hora: document.getElementById("campo-hora").value,
+      titulo: titulo,
+      obs: document.getElementById("campo-obs").value.trim()
+    };
+
+    agenda[diaAberto] = compromissosDaData(diaAberto).concat(entrada);
+    salvarAgenda();
+    form.reset();
+    renderizarListaDia();
+    montarPainel();
+    desenhar();
+    campoTitulo.focus();
+  });
+
+  document.getElementById("lista-dia").addEventListener("click", (e) => {
+    const botao = e.target.closest(".btn-excluir");
+    if (!botao || !diaAberto) return;
+    excluirCompromisso(diaAberto, botao.dataset.id);
+  });
+
+  const listaPainel = document.getElementById("lista-compromissos");
+
+  listaPainel.addEventListener("click", (e) => {
+    const botao = e.target.closest(".btn-excluir");
+    if (botao) {
+      e.stopPropagation();
+      excluirCompromisso(botao.dataset.data, botao.dataset.id);
+      return;
+    }
+    const item = e.target.closest(".item-compromisso");
+    if (item) irParaDia(item.dataset.data);
+  });
+
+  listaPainel.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    if (e.target.closest(".btn-excluir")) return;
+    const item = e.target.closest(".item-compromisso");
+    if (!item) return;
+    e.preventDefault();
+    irParaDia(item.dataset.data);
+  });
+
+  desenhar();
+  montarLegenda();
+  montarPainel();
+</script>
+</body>
+</html>
