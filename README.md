@@ -22,6 +22,7 @@ O layout foi construído primeiro para telas pequenas:
 | Arquivo | Descrição |
 |---|---|
 | `calendario-2026.html` | Aplicação completa: calendário, legenda de feriados e agenda |
+| `favicon.svg` | Ícone da aba do navegador |
 | `vercel.json` | Configuração da Vercel (raiz `/` serve o calendário) |
 | `README.md` | Este arquivo |
 
