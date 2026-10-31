@@ -3,6 +3,8 @@
 Calendário anual de 2026 com feriados nacionais, estaduais (SP) e municipais de
 Mogi das Cruzes, além de agenda de compromissos salva no navegador.
 
+**Publicado em:** <https://calendario-2026-ivory.vercel.app>
+
 ## Conteúdo
 
 | Arquivo | Descrição |
