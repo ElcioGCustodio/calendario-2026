@@ -109,7 +109,7 @@ Commits principais:
 | `ef65644` | Documenta a URL de produção |
 | `3f113bf` | Layout mobile first e navegação de meses |
 | `7a2bff5` | Favicon e correção do 404 na raiz |
-| *(commit de documentação)* | Documentação e testes automatizados |
+| `4b0ffcd` | Documentação completa e testes automatizados |
 
 Consulte `git log --oneline` para o histórico completo.
 

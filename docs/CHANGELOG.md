@@ -5,6 +5,8 @@ os números abaixo organizam as entregas.
 
 ## [0.4.0] — 2026-10-31 — Documentação e testes
 
+Commit: `4b0ffcd`
+
 ### Adicionado
 
 - Suíte automatizada `tests/responsivo.mjs` com **29 verificações** de
