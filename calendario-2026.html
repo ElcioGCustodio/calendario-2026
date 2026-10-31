@@ -2,9 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f4f6fb">
 <title>Calendário 2026 · Mogi das Cruzes</title>
 <style>
+  /* =========================================================
+     Base mobile-first
+     ========================================================= */
   :root {
     --fundo: #f4f6fb;
     --cartao: #ffffff;
@@ -25,28 +29,68 @@
 
   * { box-sizing: border-box; }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
   body {
     margin: 0;
-    padding: 32px 20px 56px;
+    padding: 16px 12px calc(40px + env(safe-area-inset-bottom));
     font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
     background: radial-gradient(circle at top, #e9effb 0%, var(--fundo) 45%) no-repeat;
     background-color: var(--fundo);
     color: var(--texto);
+    overflow-x: hidden;
   }
 
+  button,
+  select,
+  input {
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--borda);
+    background: var(--cartao);
+    color: var(--texto);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+
+  button:focus-visible,
+  select:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--destaque);
+    outline-offset: 2px;
+  }
+
+  button.principal {
+    background: var(--destaque);
+    border-color: var(--destaque);
+    color: #fff;
+    box-shadow: 0 8px 18px -8px var(--destaque);
+  }
+
+  /* ---------- Cabeçalho ---------- */
   header {
     max-width: 1180px;
-    margin: 0 auto 28px;
+    margin: 0 auto 18px;
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
   }
 
   h1 {
     margin: 0;
-    font-size: clamp(2.2rem, 6vw, 3.4rem);
+    font-size: clamp(1.9rem, 8vw, 3.4rem);
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1;
@@ -57,58 +101,95 @@
   .subtitulo {
     margin: 6px 0 0;
     color: var(--suave);
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
   }
 
-  .acoes { display: flex; gap: 10px; }
+  .acoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
 
-  button {
-    font: inherit;
-    font-size: 0.9rem;
+  .acoes button {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 0.86rem;
+  }
+
+  #btn-novo { grid-column: 1 / -1; }
+
+  /* ---------- Navegação de meses (somente no mobile) ---------- */
+  .mes-nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 -12px 14px;
+    padding: 10px 12px;
+    background: rgba(244, 246, 251, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--borda);
+  }
+
+  .mes-nav .nav-btn {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    font-size: 1.45rem;
+    line-height: 1;
+    border-radius: 12px;
+  }
+
+  #seletor-mes {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 44px;
+    padding: 0 10px;
+    font-size: 16px;
     font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1px solid var(--borda);
+    color: var(--destaque);
     background: var(--cartao);
-    color: var(--texto);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    text-align: center;
+    text-align-last: center;
     cursor: pointer;
-    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
   }
 
-  button:hover { background: #eef2ff; transform: translateY(-1px); }
-  button.principal {
-    background: var(--destaque);
-    border-color: var(--destaque);
-    color: #fff;
-    box-shadow: 0 8px 18px -8px var(--destaque);
-  }
-  button.principal:hover { background: #1d4ed8; }
-
+  /* ---------- Calendário ---------- */
   .calendario {
     max-width: 1180px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    scroll-margin-top: 74px;
   }
+
+  /* No mobile o JS mostra apenas o mês ativo */
+  .calendario.modo-mobile .mes { display: none; }
+  .calendario.modo-mobile .mes.ativo { display: block; }
 
   .mes {
     background: var(--cartao);
     border: 1px solid var(--borda);
-    border-radius: 16px;
-    padding: 18px 16px 20px;
+    border-radius: 14px;
+    padding: 14px 12px 16px;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     transition: box-shadow 0.2s, transform 0.2s;
   }
 
-  .mes:hover {
-    box-shadow: 0 14px 30px -18px rgba(15, 23, 42, 0.45);
-    transform: translateY(-2px);
-  }
-
   .mes h2 {
-    margin: 0 0 14px;
-    font-size: 1.05rem;
+    margin: 0 0 10px;
+    font-size: 1rem;
     font-weight: 700;
     text-transform: capitalize;
     color: var(--destaque);
@@ -118,7 +199,7 @@
   }
 
   .mes h2 small {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 600;
     color: var(--suave);
     letter-spacing: 0.08em;
@@ -132,20 +213,21 @@
   }
 
   th {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--suave);
-    padding-bottom: 8px;
+    padding-bottom: 6px;
   }
 
   th.fim { color: var(--fim-de-semana); }
 
   td {
+    position: relative;
     text-align: center;
-    font-size: 0.84rem;
-    padding: 5px 0;
+    font-size: 0.9rem;
+    padding: 10px 0;
     border-radius: 8px;
     cursor: default;
   }
@@ -191,41 +273,70 @@
     color: #fff;
   }
 
-  tbody tr:hover td:not(.vazio):not(.hoje) { background: #f1f5f9; }
-  tbody tr:hover td.fim:not(.hoje) { background: #fee2e2; }
+  /* ---------- Compromissos no calendário ---------- */
+  td[data-data] { cursor: pointer; }
+
+  td[data-data]:focus-visible {
+    outline: 2px solid var(--destaque);
+    outline-offset: -2px;
+  }
+
+  td.com-compromisso::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--destaque);
+    transform: translateX(-50%);
+  }
+
+  td.com-compromisso.hoje::after { background: #fff; }
+
+  td.piscar { animation: piscar 0.9s ease-out 2; }
+
+  @keyframes piscar {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.55); }
+    50% { box-shadow: 0 0 0 7px rgba(37, 99, 235, 0); }
+  }
 
   /* ---------- Legenda completa ---------- */
   .legenda-completa {
     max-width: 1180px;
-    margin: 44px auto 0;
+    margin: 20px auto 0;
     background: var(--cartao);
     border: 1px solid var(--borda);
-    border-radius: 18px;
-    padding: 26px 24px 30px;
+    border-radius: 16px;
+    padding: 18px 14px 22px;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   }
 
-  .legenda-completa > h2 {
+  .legenda-completa > h2,
+  .compromissos h2 {
     margin: 0;
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     letter-spacing: -0.02em;
   }
 
-  .legenda-completa > p {
-    margin: 6px 0 22px;
+  .legenda-completa > p,
+  .compromissos > p {
+    margin: 6px 0 18px;
     color: var(--suave);
-    font-size: 0.88rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
   }
 
   .grupos {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-    gap: 26px 32px;
+    grid-template-columns: 1fr;
+    gap: 22px;
   }
 
   .grupo h3 {
-    margin: 0 0 12px;
-    font-size: 0.78rem;
+    margin: 0 0 10px;
+    font-size: 0.76rem;
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
@@ -263,15 +374,13 @@
 
   .grupo li {
     display: grid;
-    grid-template-columns: 52px 1fr;
+    grid-template-columns: 48px 1fr;
     gap: 10px;
     align-items: baseline;
-    padding: 7px 8px;
+    padding: 8px 6px;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.86rem;
   }
-
-  .grupo li:hover { background: #f8fafc; }
 
   .grupo li time {
     font-variant-numeric: tabular-nums;
@@ -298,20 +407,20 @@
   }
 
   .aviso {
-    margin: 24px 0 0;
-    padding-top: 18px;
+    margin: 20px 0 0;
+    padding-top: 16px;
     border-top: 1px dashed var(--borda);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: var(--suave);
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
   .chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
-    margin-top: 20px;
-    font-size: 0.8rem;
+    gap: 8px 14px;
+    margin-top: 18px;
+    font-size: 0.78rem;
     color: var(--suave);
   }
 
@@ -320,6 +429,7 @@
   .amostra {
     width: 12px; height: 12px; border-radius: 4px;
     display: inline-block;
+    flex: 0 0 auto;
   }
   .amostra.hoje { background: var(--destaque); }
   .amostra.nacional { background: var(--nacional-suave); border: 1px solid #bfdbfe; }
@@ -328,65 +438,15 @@
   .amostra.facultativo { background: #fff; border: 1px dashed #cbd5e1; }
   .amostra.fim { background: #fee2e2; border: 1px solid #fecaca; }
 
-  footer {
-    max-width: 1180px;
-    margin: 28px auto 0;
-    color: var(--suave);
-    font-size: 0.78rem;
-    text-align: center;
-    line-height: 1.6;
-  }
-
-  /* ---------- Compromissos ---------- */
-  td { position: relative; }
-
-  td[data-data] { cursor: pointer; }
-  td[data-data]:focus-visible {
-    outline: 2px solid var(--destaque);
-    outline-offset: -2px;
-  }
-
-  td.com-compromisso::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 1px;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--destaque);
-    transform: translateX(-50%);
-  }
-
-  td.com-compromisso.hoje::after { background: #fff; }
-
-  td.piscar { animation: piscar 0.9s ease-out 2; }
-
-  @keyframes piscar {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.55); }
-    50% { box-shadow: 0 0 0 7px rgba(37, 99, 235, 0); }
-  }
-
+  /* ---------- Painel de compromissos ---------- */
   .compromissos {
     max-width: 1180px;
-    margin: 24px auto 0;
+    margin: 16px auto 0;
     background: var(--cartao);
     border: 1px solid var(--borda);
-    border-radius: 18px;
-    padding: 26px 24px 28px;
+    border-radius: 16px;
+    padding: 18px 14px 20px;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  }
-
-  .compromissos h2 {
-    margin: 0;
-    font-size: 1.35rem;
-    letter-spacing: -0.02em;
-  }
-
-  .compromissos > p {
-    margin: 6px 0 18px;
-    color: var(--suave);
-    font-size: 0.88rem;
   }
 
   .lista-compromissos {
@@ -398,10 +458,14 @@
   }
 
   .item-compromisso {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-template-areas:
+      "data hora excluir"
+      "info info info";
+    gap: 4px 10px;
     align-items: center;
-    gap: 14px;
-    padding: 10px 12px;
+    padding: 12px;
     border: 1px solid var(--borda);
     border-radius: 12px;
     background: #fbfdff;
@@ -409,18 +473,12 @@
     transition: border-color 0.15s, background 0.15s;
   }
 
-  .item-compromisso:hover {
-    border-color: #bfdbfe;
-    background: #f5f9ff;
-  }
-
   .item-compromisso .data {
+    grid-area: data;
     font-weight: 700;
     font-size: 0.85rem;
     color: var(--destaque);
     font-variant-numeric: tabular-nums;
-    min-width: 78px;
-    flex: 0 0 auto;
   }
 
   .item-compromisso .data small {
@@ -431,17 +489,17 @@
   }
 
   .item-compromisso .hora {
+    grid-area: hora;
     font-variant-numeric: tabular-nums;
     font-weight: 600;
     font-size: 0.82rem;
     color: #475569;
-    min-width: 44px;
-    flex: 0 0 auto;
   }
 
   .item-compromisso .info {
-    flex: 1;
+    grid-area: info;
     min-width: 0;
+    padding-top: 2px;
   }
 
   .item-compromisso .info strong {
@@ -470,25 +528,34 @@
     transition: background 0.15s;
   }
 
-  .btn-excluir:hover { background: #fee2e2; }
+  .item-compromisso .btn-excluir {
+    grid-area: excluir;
+    justify-self: end;
+    min-width: 40px;
+    min-height: 40px;
+    display: grid;
+    place-items: center;
+  }
 
   .vazio-lista {
     color: var(--suave);
     font-size: 0.85rem;
     padding: 8px 2px;
+    line-height: 1.45;
   }
 
-  /* ---------- Modal ---------- */
+  /* ---------- Modal (bottom sheet no mobile) ---------- */
   .modal-fundo {
     position: fixed;
     inset: 0;
     z-index: 50;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
-    padding: 20px;
+    padding: 0;
     background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     animation: aparecer 0.18s ease-out;
   }
 
@@ -496,45 +563,45 @@
 
   .modal {
     position: relative;
-    width: min(480px, 100%);
-    max-height: 86vh;
+    width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
     overflow: auto;
+    overscroll-behavior: contain;
     background: #fff;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.5);
-    animation: subir 0.2s ease-out;
+    border-radius: 18px 18px 0 0;
+    padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+    box-shadow: 0 -20px 60px -20px rgba(15, 23, 42, 0.45);
+    animation: subir-mobile 0.22s ease-out;
   }
 
   .modal h2 {
     margin: 0 0 4px;
-    font-size: 1.22rem;
+    font-size: 1.15rem;
     letter-spacing: -0.01em;
   }
 
   .modal-data {
-    margin: 0 0 18px;
+    margin: 0 0 16px;
     color: var(--suave);
-    font-size: 0.84rem;
+    font-size: 0.82rem;
     text-transform: capitalize;
   }
 
   .fechar {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 32px;
-    height: 32px;
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
     border: none;
     border-radius: 50%;
     background: #f1f5f9;
     color: #64748b;
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     line-height: 1;
     cursor: pointer;
   }
-
-  .fechar:hover { background: #e2e8f0; color: var(--texto); }
 
   .lista-dia {
     list-style: none;
@@ -551,7 +618,7 @@
     padding: 10px 12px;
     border-radius: 10px;
     background: #f8fafc;
-    font-size: 0.85rem;
+    font-size: 0.86rem;
   }
 
   .lista-dia .hora {
@@ -578,20 +645,21 @@
   .campo {
     display: grid;
     gap: 5px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #475569;
   }
 
   .campo input {
     font: inherit;
-    font-size: 0.9rem;
+    font-size: 16px;
     font-weight: 400;
-    padding: 10px 12px;
+    padding: 12px;
     border-radius: 10px;
     border: 1px solid var(--borda);
     background: #fff;
     color: var(--texto);
+    width: 100%;
   }
 
   .campo input:focus {
@@ -602,24 +670,202 @@
 
   .linha-campos {
     display: grid;
-    grid-template-columns: 112px 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  #form-compromisso button[type="submit"] { justify-self: start; }
+  #form-compromisso button[type="submit"] {
+    width: 100%;
+    min-height: 46px;
+    justify-self: stretch;
+  }
 
   @keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes subir { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-  @media (max-width: 520px) {
-    .linha-campos { grid-template-columns: 1fr; }
+  @keyframes subir-mobile {
+    from { opacity: 0.6; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
   }
+  @keyframes subir {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  footer {
+    max-width: 1180px;
+    margin: 24px auto 0;
+    color: var(--suave);
+    font-size: 0.74rem;
+    text-align: center;
+    line-height: 1.6;
+    padding: 0 4px;
+  }
+
+  /* Efeitos de hover apenas em dispositivos com mouse */
+  @media (hover: hover) {
+    button:hover { background: #eef2ff; transform: translateY(-1px); }
+    button.principal:hover { background: #1d4ed8; }
+    .mes:hover {
+      box-shadow: 0 14px 30px -18px rgba(15, 23, 42, 0.45);
+      transform: translateY(-2px);
+    }
+    tbody tr:hover td:not(.vazio):not(.hoje) { background: #f1f5f9; }
+    tbody tr:hover td.fim:not(.hoje) { background: #fee2e2; }
+    .grupo li:hover { background: #f8fafc; }
+    .item-compromisso:hover {
+      border-color: #bfdbfe;
+      background: #f5f9ff;
+    }
+    .btn-excluir:hover { background: #fee2e2; }
+    .fechar:hover { background: #e2e8f0; color: var(--texto); }
+  }
+
+  /* =========================================================
+     Telas maiores
+     ========================================================= */
+  @media (min-width: 640px) {
+    body { padding: 26px 20px 48px; }
+
+    header {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .subtitulo { font-size: 0.92rem; }
+
+    .acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .acoes button {
+      width: auto;
+      min-height: 0;
+      padding: 10px 18px;
+      font-size: 0.88rem;
+    }
+
+    #btn-novo { grid-column: auto; }
+
+    .mes-nav { display: none; }
+
+    .calendario {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      scroll-margin-top: 0;
+    }
+
+    .mes {
+      padding: 17px 15px 19px;
+      border-radius: 16px;
+    }
+
+    .mes h2 { font-size: 1.02rem; margin-bottom: 12px; }
+    th { font-size: 0.67rem; padding-bottom: 7px; }
+    td { font-size: 0.85rem; padding: 5px 0; }
+
+    .legenda-completa,
+    .compromissos {
+      margin-top: 28px;
+      padding: 24px 22px 26px;
+      border-radius: 18px;
+    }
+
+    .legenda-completa > h2,
+    .compromissos h2 { font-size: 1.3rem; }
+
+    .legenda-completa > p,
+    .compromissos > p { font-size: 0.88rem; margin-bottom: 20px; }
+
+    .grupos {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px 28px;
+    }
+
+    .item-compromisso {
+      grid-template-columns: auto auto 1fr auto;
+      grid-template-areas: "data hora info excluir";
+      gap: 12px;
+      padding: 11px 12px;
+    }
+
+    .item-compromisso .info { padding-top: 0; }
+
+    .modal-fundo {
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal {
+      width: min(480px, 100%);
+      max-height: 86vh;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.5);
+      animation: subir 0.2s ease-out;
+    }
+
+    .modal h2 { font-size: 1.22rem; }
+    .modal-data { font-size: 0.84rem; margin-bottom: 18px; }
+
+    .fechar {
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      font-size: 1.15rem;
+    }
+
+    .linha-campos {
+      grid-template-columns: 112px 1fr;
+      gap: 12px;
+    }
+
+    .campo input { font-size: 0.9rem; padding: 10px 12px; }
+
+    #form-compromisso button[type="submit"] {
+      width: auto;
+      min-height: 0;
+      justify-self: start;
+    }
+
+    footer { margin-top: 30px; font-size: 0.78rem; }
+  }
+
+  @media (min-width: 960px) {
+    .calendario {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    body { padding: 32px 20px 56px; }
+    .calendario { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @page { margin: 10mm; }
 
   @media print {
     body { background: #fff; padding: 0; }
-    .acoes { display: none; }
+    .acoes, .mes-nav { display: none !important; }
     .mes { break-inside: avoid; border-color: #ccc; box-shadow: none; }
-    .calendario { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .calendario,
+    .calendario.modo-mobile { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .calendario.modo-mobile .mes { display: block !important; }
     .legenda-completa, .compromissos { break-inside: avoid; border-color: #ccc; box-shadow: none; }
     .modal-fundo { display: none !important; }
     .btn-excluir, #btn-novo { display: none !important; }
@@ -639,6 +885,12 @@
     <button class="principal" onclick="window.print()">Imprimir</button>
   </div>
 </header>
+
+<nav class="mes-nav" aria-label="Navegação entre meses">
+  <button class="nav-btn" id="mes-anterior" type="button" aria-label="Mês anterior">‹</button>
+  <select id="seletor-mes" aria-label="Escolher mês"></select>
+  <button class="nav-btn" id="mes-proximo" type="button" aria-label="Próximo mês">›</button>
+</nav>
 
 <main class="calendario" id="calendario" aria-label="Calendário do ano de 2026"></main>
 
@@ -716,6 +968,10 @@
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
   ];
+
+  const BP_MOBILE = window.matchMedia("(max-width: 639.98px)");
+  const hojeInicial = new Date();
+  let mesAtivo = hojeInicial.getFullYear() === ANO ? hojeInicial.getMonth() : 0;
 
   /*
    * tipo: "nacional" | "estadual" | "municipal" | "facultativo"
@@ -984,6 +1240,7 @@
   function irParaDia(iso) {
     fecharModal();
     const mes = Number(iso.split("-")[1]);
+    if (BP_MOBILE.matches) irParaMes(mes - 1, { scroll: false });
     const card = document.getElementById("mes-" + mes);
     if (!card) return;
 
@@ -998,10 +1255,54 @@
     }, 380);
   }
 
+  /* ---------- Navegação de meses (mobile) ---------- */
+  function montarSeletorMes() {
+    const seletor = document.getElementById("seletor-mes");
+    if (!seletor) return;
+    seletor.innerHTML = "";
+    MESES.forEach((nome, indice) => {
+      const opcao = document.createElement("option");
+      opcao.value = String(indice);
+      opcao.textContent = nome + " · " + ANO;
+      seletor.appendChild(opcao);
+    });
+    seletor.value = String(mesAtivo);
+  }
+
+  function atualizarMesAtivo() {
+    document.querySelectorAll(".mes").forEach((card) => {
+      const indice = Number(card.dataset.mes);
+      card.classList.toggle("ativo", indice === mesAtivo);
+    });
+    const seletor = document.getElementById("seletor-mes");
+    if (seletor && seletor.options.length) seletor.value = String(mesAtivo);
+  }
+
+  function aplicarModoMobile() {
+    const container = document.getElementById("calendario");
+    if (!container) return;
+    container.classList.toggle("modo-mobile", BP_MOBILE.matches);
+    atualizarMesAtivo();
+  }
+
+  function irParaMes(indice, opcoes) {
+    const config = opcoes || {};
+    mesAtivo = ((indice % 12) + 12) % 12;
+    atualizarMesAtivo();
+
+    if (BP_MOBILE.matches && config.scroll !== false) {
+      document.getElementById("calendario").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  }
+
   function criarMes(mes, hoje) {
     const card = document.createElement("section");
     card.className = "mes";
     card.id = "mes-" + (mes + 1);
+    card.dataset.mes = String(mes);
 
     const titulo = document.createElement("h2");
     titulo.textContent = MESES[mes];
@@ -1172,6 +1473,7 @@
     for (let mes = 0; mes < 12; mes++) {
       container.appendChild(criarMes(mes, hoje));
     }
+    atualizarMesAtivo();
   }
 
   document.getElementById("btn-hoje").addEventListener("click", () => {
@@ -1179,6 +1481,7 @@
     const alvo = agora.getFullYear() === ANO ? agora.getMonth() + 1 : null;
     if (alvo) {
       const card = document.getElementById("mes-" + alvo);
+      if (BP_MOBILE.matches) irParaMes(alvo - 1, { scroll: false });
       card.scrollIntoView({ behavior: "smooth", block: "center" });
       card.style.outline = "3px solid var(--destaque)";
       setTimeout(() => (card.style.outline = ""), 1600);
@@ -1187,12 +1490,32 @@
     }
   });
 
+  /* ---------- Navegação: botões, seletor, teclado e swipe ---------- */
+  document.getElementById("mes-anterior").addEventListener("click", () => {
+    irParaMes(mesAtivo - 1);
+  });
+
+  document.getElementById("mes-proximo").addEventListener("click", () => {
+    irParaMes(mesAtivo + 1);
+  });
+
+  document.getElementById("seletor-mes").addEventListener("change", (e) => {
+    irParaMes(Number(e.target.value));
+  });
+
+  if (typeof BP_MOBILE.addEventListener === "function") {
+    BP_MOBILE.addEventListener("change", aplicarModoMobile);
+  } else if (typeof BP_MOBILE.addListener === "function") {
+    BP_MOBILE.addListener(aplicarModoMobile);
+  }
+
   /* ---------- Interações da agenda ---------- */
   const containerCalendario = document.getElementById("calendario");
   const modal = document.getElementById("modal");
   const form = document.getElementById("form-compromisso");
 
   containerCalendario.addEventListener("click", (e) => {
+    if (Date.now() - ultimoSwipe < 350) return;
     const td = e.target.closest("td[data-data]");
     if (td) abrirModal(td.dataset.data);
   });
@@ -1205,12 +1528,39 @@
     abrirModal(td.dataset.data);
   });
 
+  /* Swipe horizontal para trocar de mês no mobile */
+  let toqueInicio = null;
+  let ultimoSwipe = 0;
+
+  containerCalendario.addEventListener("touchstart", (e) => {
+    if (!BP_MOBILE.matches || e.touches.length !== 1) return;
+    toqueInicio = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }, { passive: true });
+
+  containerCalendario.addEventListener("touchend", (e) => {
+    if (!toqueInicio) return;
+    const toque = e.changedTouches[0];
+    const dx = toque.clientX - toqueInicio.x;
+    const dy = toque.clientY - toqueInicio.y;
+    toqueInicio = null;
+
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      ultimoSwipe = Date.now();
+      irParaMes(mesAtivo + (dx < 0 ? 1 : -1));
+    }
+  }, { passive: true });
+
+  containerCalendario.addEventListener("touchcancel", () => {
+    toqueInicio = null;
+  }, { passive: true });
+
   document.getElementById("btn-novo").addEventListener("click", () => {
     const agora = new Date();
     const iso =
       agora.getFullYear() === ANO
         ? ANO + "-" + doisDigitos(agora.getMonth() + 1) + "-" + doisDigitos(agora.getDate())
         : ANO + "-01-01";
+    if (BP_MOBILE.matches) irParaMes(Number(iso.split("-")[1]) - 1, { scroll: false });
     abrirModal(iso);
   });
 
@@ -1280,8 +1630,10 @@
   });
 
   desenhar();
+  montarSeletorMes();
   montarLegenda();
   montarPainel();
+  aplicarModoMobile();
 </script>
 </body>
 </html>

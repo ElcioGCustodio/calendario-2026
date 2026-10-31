@@ -5,6 +5,18 @@ Mogi das Cruzes, além de agenda de compromissos salva no navegador.
 
 **Publicado em:** <https://calendario-2026-ivory.vercel.app>
 
+## Mobile first
+
+O layout foi construído primeiro para telas pequenas:
+
+- Um mês por tela, com navegação por setas, seletor de mês e **swipe** lateral
+- Barra de navegação fixa no topo enquanto se rola a página
+- Botões e dias com área de toque confortável (mínimo 40 px)
+- Janela de compromissos em formato *bottom sheet* (sobe de baixo)
+- Campos com fonte de 16 px para evitar zoom automático no iOS
+- Em telas maiores: 2 colunas (≥ 640 px), 3 colunas (≥ 960 px) e 4 colunas (≥ 1200 px)
+- `prefers-reduced-motion` respeitado e layout de impressão em 3 colunas
+
 ## Conteúdo
 
 | Arquivo | Descrição |
